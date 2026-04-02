@@ -59,7 +59,7 @@ public class CRMService {
         }
         boolean removed = clients.remove(client);
         if (removed) {
-            System.out.println("✓ Client deleted: " + client.getDisplayInfo());
+            System.out.println("Client deleted: " + client.getDisplayInfo());
         }
         return removed;
     }

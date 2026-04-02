@@ -26,7 +26,7 @@ public class FileStorage {
         }catch (IOException e) {
             System.out.println("Error saving data: "+e.getMessage());
         }
-    }
+    } 
     @SuppressWarnings("unchecked")
     public List<Client> load() {
         File file = new File(FILE_PATH);
