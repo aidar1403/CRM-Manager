@@ -1,8 +1,13 @@
 package com.crm.ui;
-
+import com.crm.storage.CsvExporter;
 import com.crm.service.CRMService;
 import com.crm.storage.FileStorage;
 import com.crm.model.Client;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 
 public class ConsoleUI {
@@ -42,15 +47,15 @@ public class ConsoleUI {
                 case 3:
                     findClientById();
                     break;
-                    case 4:
-                        updateClient();
+                case 4:
+                    updateClient();
                     break;
-                    case 5:
-                        deleteClient();
+                case 5:
+                    deleteClient();
                     break;
-                    case 6:
-                        addInteraction();
-                        break;
+                case 6:
+                    addInteraction();
+                    break;
                 case 7:
                     viewInteractions();
                     break;
@@ -58,17 +63,23 @@ public class ConsoleUI {
                     showStatistics();
                     break;
                 case 9:
+                    exportData();      // НОВЫЙ
+                    break;
+                case 10:
+                    importData();      // НОВЫЙ
+                    break;
+                case 0:
                     running = false;
                     saveAndExit();
                     break;
                 default:
-                    System.out.println("Invalid option. Please choose 1-9.");
+                    System.out.println("Invalid option. Please choose 0-10.");
             }
         }
     }
 
     private void showMainMenu() {
-        System.out.println("MAIN MENU");
+        System.out.println("\n========== CRM MANAGER ==========");
         System.out.println("1. Add New Client");
         System.out.println("2. View All Clients");
         System.out.println("3. Find Client by ID");
@@ -77,7 +88,10 @@ public class ConsoleUI {
         System.out.println("6. Add Interaction (Note)");
         System.out.println("7. View Client Interactions");
         System.out.println("8. Statistics");
-        System.out.println("9. Save & Exit");
+        System.out.println("9. Export to CSV");
+        System.out.println("10. Import from CSV");
+        System.out.println("0. Save & Exit");
+        System.out.println("==================================");
     }
 
     private void addClient() {
@@ -232,6 +246,69 @@ System.out.println("\t\t\tAll Clients\t\t\t");
         List<Client> clients = service.getAllClients();
         storage.save(clients);
         System.out.println("\nData saved. Goodbye!");
+    }
+
+    private void exportData() {
+        System.out.println("\nExport to CSV");
+        System.out.print("Enter filename (e.g., my_clients): ");
+        String filename = scanner.nextLine().trim();
+        if (filename.isEmpty()) {
+            filename = "clients_export";
+        }
+
+        CsvExporter exporter = new CsvExporter();
+        try {
+            List<Client> clients = service.getAllClients();
+            if (clients.isEmpty()) {
+                System.out.println("No clients to export.");
+                return;
+            }
+            exporter.exportToCsv(clients, filename);
+        } catch (IOException e) {
+            System.out.println("Export failed: " + e.getMessage());
+        }
+    }
+
+    private void importData() {
+        System.out.println("\n--- Import from CSV ---");
+        System.out.print("Enter filename to import (e.g., clients.csv): ");
+        String filename = scanner.nextLine().trim();
+
+        if (filename.isEmpty()) {
+            System.out.println("Filename cannot be empty.");
+            return;
+        }
+
+        String fullPath = "data/" + (filename.endsWith(".csv") ? filename : filename + ".csv");
+        File file = new File(fullPath);
+
+        if (!file.exists()) {
+            System.out.println("File not found: " + fullPath);
+            return;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(fullPath))) {
+            String line = reader.readLine(); // пропускаем заголовки
+            int count = 0;
+
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().isEmpty()) continue;
+
+                String[] parts = line.split(",");
+                if (parts.length >= 3) {
+                    String name = parts[1].replace("\"", "").trim();
+                    String email = parts[2].replace("\"", "").trim();
+                    String phone = parts.length > 3 ? parts[3].replace("\"", "").trim() : "";
+                    String company = parts.length > 4 ? parts[4].replace("\"", "").trim() : "";
+
+                    service.addClient(name, email, phone, company);
+                    count++;
+                }
+            }
+            System.out.println("Imported " + count + " clients from " + fullPath);
+        } catch (IOException e) {
+            System.out.println("Import failed: " + e.getMessage());
+        }
     }
 
     private String getStringInput(String prompt, boolean required) {
