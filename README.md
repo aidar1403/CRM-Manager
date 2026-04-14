@@ -74,3 +74,11 @@ src/com/crm/
 └── ui/
 └── ConsoleUI.java # Menu-driven console interface
 
+## Bonus Features Implemented
+
+ Authentication and User Roles (+10 bonus points)
+ 
+- **Login system** with username/password
+- **Admin role** (admin/admin123) – full access (CRUD, import/export)
+- **User role** (user/user123) – read-only access (view clients, interactions, statistics)
+- Access control implemented in ConsoleUI with role-based menu
