@@ -3,7 +3,7 @@ import com.crm.storage.CsvExporter;
 import com.crm.service.CRMService;
 import com.crm.storage.FileStorage;
 import com.crm.model.Client;
-
+import com.crm.service.AuthService;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -14,12 +14,17 @@ public class ConsoleUI {
     private CRMService service;
     private FileStorage storage;
     private Scanner scanner;
-
+    private AuthService authService;
     public ConsoleUI(){
         service = new CRMService();
         storage = new FileStorage();
         scanner = new Scanner(System.in);
+        authService = new AuthService();
 
+        boolean loggedIn = false;
+        while(!loggedIn) {
+           loggedIn = authService.login();
+        }
         List<Client> loaded = storage.load();
         if (!loaded.isEmpty()) {
             for (Client c : loaded) {
@@ -32,11 +37,37 @@ public class ConsoleUI {
     public void start() {
         System.out.println("\t\t\t\tCRM MANAGER\t\t\t\t");
         System.out.println("\t\t\tManagement System\t\t\t");
+        System.out.println("Logged in as: " + authService.getCurrentUser() +
+                " (" + authService.getCurrentRole() + ")");
 
         boolean running = true;
         while (running) {
             showMainMenu();
             int choice = getIntInput("\nChoose option: ");
+
+            if (!authService.isAdmin()) {
+                boolean allowed = false;
+                switch (choice) {
+                    case 2:  // View All Clients
+                    case 3:  // Find by ID
+                    case 7:  // View Interactions
+                    case 8:  // Statistics
+                    case 11: // Logout
+                    case 0:  // Exit
+                        allowed = true;
+                        break;
+                    default:
+                }
+
+                if (!allowed) {
+                    System.out.println("\n❌ ACCESS DENIED! " +
+                            authService.getCurrentRole() +
+                            " users cannot perform this action.");
+                    System.out.println("   Only ADMIN can: Add, Update, Delete, Add Interaction, Export, Import");
+                    continue;
+                }
+            }
+
             switch (choice) {
                 case 1:
                     addClient();
@@ -63,35 +94,61 @@ public class ConsoleUI {
                     showStatistics();
                     break;
                 case 9:
-                    exportData();      // НОВЫЙ
+                    exportData();
                     break;
                 case 10:
-                    importData();      // НОВЫЙ
+                    importData();
+                    break;
+                case 11:
+                    authService.logout();
+                    boolean relogged = false;
+                    while (!relogged) {
+                        relogged = authService.login();
+                    }
+                    System.out.println("Welcome back, " + authService.getCurrentUser());
+                    System.out.println("Role: " + authService.getCurrentRole());
                     break;
                 case 0:
                     running = false;
                     saveAndExit();
                     break;
                 default:
-                    System.out.println("Invalid option. Please choose 0-10.");
+                    System.out.println("Invalid option. Please choose 0-11.");
             }
         }
     }
 
     private void showMainMenu() {
         System.out.println("\n========== CRM MANAGER ==========");
-        System.out.println("1. Add New Client");
-        System.out.println("2. View All Clients");
-        System.out.println("3. Find Client by ID");
-        System.out.println("4. Update Client");
-        System.out.println("5. Delete Client");
-        System.out.println("6. Add Interaction (Note)");
-        System.out.println("7. View Client Interactions");
-        System.out.println("8. Statistics");
-        System.out.println("9. Export to CSV");
-        System.out.println("10. Import from CSV");
+        System.out.println("User: " + authService.getCurrentUser() +
+                " | Role: " + authService.getCurrentRole());
+
+        if (authService.isAdmin()) {
+            System.out.println("1. Add New Client");
+            System.out.println("2. View All Clients");
+            System.out.println("3. Find Client by ID");
+            System.out.println("4. Update Client");
+            System.out.println("5. Delete Client");
+            System.out.println("6. Add Interaction (Note)");
+            System.out.println("7. View Client Interactions");
+            System.out.println("8. Statistics");
+            System.out.println("9. Export to CSV");
+            System.out.println("10. Import from CSV");
+            System.out.println("11. Logout / Switch User");
+        } else {
+            System.out.println("1. [RESTRICTED] Add New Client (ADMIN ONLY)");
+            System.out.println("2. View All Clients");
+            System.out.println("3. Find Client by ID");
+            System.out.println("4. [RESTRICTED] Update Client (ADMIN ONLY)");
+            System.out.println("5. [RESTRICTED] Delete Client (ADMIN ONLY)");
+            System.out.println("6. [RESTRICTED] Add Interaction (ADMIN ONLY)");
+            System.out.println("7. View Client Interactions");
+            System.out.println("8. Statistics");
+            System.out.println("9. [RESTRICTED] Export to CSV (ADMIN ONLY)");
+            System.out.println("10. [RESTRICTED] Import from CSV (ADMIN ONLY)");
+            System.out.println("11. Logout / Switch User");
+        }
         System.out.println("0. Save & Exit");
-        System.out.println("==================================");
     }
 
     private void addClient() {
@@ -288,7 +345,8 @@ System.out.println("\t\t\tAll Clients\t\t\t");
         }
 
         try (BufferedReader reader = new BufferedReader(new FileReader(fullPath))) {
-            String line = reader.readLine(); // пропускаем заголовки
+            reader.readLine();
+            String line;
             int count = 0;
 
             while ((line = reader.readLine()) != null) {
