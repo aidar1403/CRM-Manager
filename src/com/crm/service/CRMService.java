@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 import com.crm.model.Client;
 public class CRMService {
-    private List<Client> clients;
+    private final List<Client> clients;
 
     public CRMService() {
         clients = new ArrayList<>();
@@ -88,14 +88,4 @@ public class CRMService {
         return clients.size();
     }
 
-    public void setClients(List<Client>loadedClients) {
-        this.clients = new ArrayList<>(loadedClients);
-
-        int maxId = 0;
-        for (Client c : clients) {
-            if (c.getId()>maxId) {
-                maxId = c.getId();
-            }
-        }
-    }
 }

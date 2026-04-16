@@ -1,7 +1,7 @@
 package com.crm.ui;
 import com.crm.storage.CsvExporter;
 import com.crm.service.CRMService;
-import com.crm.storage.FileStorage;
+import com.crm.storage.DatabaseStorage;
 import com.crm.model.Client;
 import com.crm.service.AuthService;
 import java.io.BufferedReader;
@@ -12,12 +12,12 @@ import java.util.*;
 
 public class ConsoleUI {
     private CRMService service;
-    private FileStorage storage;
+    private DatabaseStorage storage;
     private Scanner scanner;
     private AuthService authService;
     public ConsoleUI(){
         service = new CRMService();
-        storage = new FileStorage();
+        storage = new DatabaseStorage();
         scanner = new Scanner(System.in);
         authService = new AuthService();
 
@@ -25,7 +25,7 @@ public class ConsoleUI {
         while(!loggedIn) {
            loggedIn = authService.login();
         }
-        List<Client> loaded = storage.load();
+        List<Client> loaded = storage.loadAll();
         if (!loaded.isEmpty()) {
             for (Client c : loaded) {
                 service.addClient(c.getName(),c.getEmail(),c.getPhone(),c.getCompany());
@@ -60,7 +60,7 @@ public class ConsoleUI {
                 }
 
                 if (!allowed) {
-                    System.out.println("\n❌ ACCESS DENIED! " +
+                    System.out.println("\n ACCESS DENIED! " +
                             authService.getCurrentRole() +
                             " users cannot perform this action.");
                     System.out.println("   Only ADMIN can: Add, Update, Delete, Add Interaction, Export, Import");
@@ -301,7 +301,7 @@ System.out.println("\t\t\tAll Clients\t\t\t");
 
     private void saveAndExit() {
         List<Client> clients = service.getAllClients();
-        storage.save(clients);
+        storage.saveAll(clients);
         System.out.println("\nData saved. Goodbye!");
     }
 

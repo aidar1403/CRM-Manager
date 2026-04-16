@@ -12,6 +12,7 @@ public class Client extends Person implements Serializable {
     private String company;
     private List<String> interactions;
 
+
     public Client(String name, String email, String phone, String company) {
         super(name, email, phone);
         this.id = nextId++;
