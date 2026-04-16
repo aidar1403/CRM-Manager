@@ -74,3 +74,63 @@ src/com/crm/
 └── ui/
 └── ConsoleUI.java # Menu-driven console interface
 
+## Bonus Features Implemented
+
+ Authentication and User Roles (+10 bonus points)
+ 
+- **Login system** with username/password
+- **Admin role** (admin/admin123) – full access (CRUD, import/export)
+- **User role** (user/user123) – read-only access (view clients, interactions, statistics)
+- Access control implemented in ConsoleUI with role-based menu
+
+##  Database Integration (SQLite) - BONUS +10 points
+
+The project uses **SQLite database** instead of file-based storage:
+
+- **Clients table** – stores all client information (id, name, email, phone, company, created_at)
+- **Interactions table** – stores notes linked to clients (client_id, note, created_at)
+- Automatic table creation on first run
+- Data persistence between sessions
+- Foreign key constraint ensures data integrity
+
+##  Authentication & User Roles - BONUS +10 points
+
+| Role | Username | Password | Permissions |
+|------|----------|----------|-------------|
+| **ADMIN** | `admin` | `admin123` | Full access (CRUD, import/export, interactions) |
+| **USER** | `user` | `user123` | Read-only access (view clients, interactions, statistics) |
+
+### Access Control Features:
+- Login screen before accessing the system
+- Role-based menu display
+- Permission checks for all operations
+- Logout / Switch User option (menu item 11)
+
+## 🛠️ Technologies Used
+
+- Java 17+
+- SQLite (JDBC)
+- CSV (import/export)
+- Java Serialization (legacy, replaced by SQLite)
+
+##  Database Schema
+
+sql
+-- Clients table
+CREATE TABLE clients (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    phone TEXT,
+    company TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+- Interactions table
+CREATE TABLE interactions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    client_id INTEGER NOT NULL,
+    note TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
+);
