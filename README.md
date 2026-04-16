@@ -134,3 +134,7 @@ CREATE TABLE interactions (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
 );
+
+##  Link to presentation with Screenshots
+
+https://1drv.ms/p/c/3d63479195e1ba1b/IQBKG_bCfZRkRp9nPb1H7kF0AbjHdrpZ5Sw2a9UvsT3yKhc?e=woBzM7
