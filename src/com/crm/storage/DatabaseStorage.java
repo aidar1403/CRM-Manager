@@ -9,7 +9,7 @@ public class DatabaseStorage {
 
     public DatabaseStorage() {
         createTables();
-        System.out.println("Connected to database: " + DB_URL);
+        System.out.println("✅ Connected to database: " + DB_URL);
     }
 
     private void createTables() {
@@ -38,12 +38,11 @@ public class DatabaseStorage {
              Statement stmt = conn.createStatement()) {
             stmt.execute(clientsTable);
             stmt.execute(interactionsTable);
-            System.out.println(" Database tables ready");
+            System.out.println("✅ Database tables ready");
         } catch (SQLException e) {
-            System.out.println(" Table creation error: " + e.getMessage());
+            System.out.println("❌ Table creation error: " + e.getMessage());
         }
     }
-
 
     public void saveAll(List<Client> clients) {
         String sql = "INSERT OR REPLACE INTO clients (id, name, email, phone, company) VALUES (?, ?, ?, ?, ?)";
@@ -61,9 +60,9 @@ public class DatabaseStorage {
 
                 saveInteractions(conn, client.getId(), client.getInteractions());
             }
-            System.out.println(" Saved " + clients.size() + " clients to database");
+            System.out.println("✅ Saved " + clients.size() + " clients to database");
         } catch (SQLException e) {
-            System.out.println(" Save error: " + e.getMessage());
+            System.out.println("❌ Save error: " + e.getMessage());
         }
     }
 
@@ -109,9 +108,9 @@ public class DatabaseStorage {
 
                 clients.add(client);
             }
-            System.out.println("Loaded " + clients.size() + " clients from database");
+            System.out.println("✅ Loaded " + clients.size() + " clients from database");
         } catch (SQLException e) {
-            System.out.println("Load error: " + e.getMessage());
+            System.out.println("❌ Load error: " + e.getMessage());
         }
         return clients;
     }

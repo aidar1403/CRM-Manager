@@ -11,9 +11,12 @@ public class CsvExporter {
         if (!dataDir.exists()) {
             dataDir.mkdirs();
         }
+
         String fullPath = "data/" + (filename.endsWith(".csv") ? filename : filename + ".csv");
+
         try (PrintWriter writer = new PrintWriter(new FileWriter(fullPath))) {
             writer.println("id,name,email,phone,company");
+
             for (Client client : clients) {
                 writer.printf("%d,%s,%s,%s,%s%n",
                         client.getId(),
@@ -24,7 +27,7 @@ public class CsvExporter {
                 );
             }
         }
-        System.out.println("Exported " + clients.size() + " clients to " + fullPath);
+        System.out.println("✅ Exported " + clients.size() + " clients to " + fullPath);
     }
 
     private String escapeCsv(String value) {
