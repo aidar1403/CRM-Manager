@@ -135,6 +135,41 @@ CREATE TABLE interactions (
     FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
 );
 
+##  JavaFX GUI (Bonus +10 points)
+
+The project includes a **full-featured graphical user interface** built with JavaFX.
+
+### GUI Features:
+
+| Feature | Description |
+|---------|-------------|
+| **Login Dialog** | Secure authentication with role-based access |
+| **Client List** | Left panel showing all clients with ID and name |
+| **Client Form** | Right panel for viewing/editing client details |
+| **CRUD Buttons** | Add, Update, Delete, Refresh operations |
+| **Interactions** | View and add notes for each client |
+| **CSV Export/Import** | Buttons for data portability |
+| **Role-Based UI** | Admin sees all buttons, User sees read-only view |
+
+
+## Technologies Used
+
+### Backend:
+- Java 17+
+- SQLite (JDBC)
+- Java Serialization (legacy)
+
+### Frontend (GUI):
+- JavaFX 17
+- Scene Builder
+- CSS for styling
+
+### Tools:
+- Maven (dependency management)
+- Git & GitHub
+- DBeaver (database management)
+- IntelliJ IDEA
+
 ##  Link to presentation with Screenshots
 
 https://1drv.ms/p/c/3d63479195e1ba1b/IQBKG_bCfZRkRp9nPb1H7kF0AbjHdrpZ5Sw2a9UvsT3yKhc?e=woBzM7
